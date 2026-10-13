@@ -18,9 +18,6 @@ Ghid pas cu pas pentru configurarea mediului și testarea unui smart contract de
 - [8. Implementează contractul (Deploy)](#8-implementează-contractul-deploy)
 - [9. Interacționează cu Deployed Contracts](#9-interacționează-cu-deployed-contracts)
 - [10. Verifică tranzacțiile pe Etherscan](#10-verifică-tranzacțiile-pe-etherscan)
-- [11. Probleme frecvente](#11-probleme-frecvente)
-- [12. Checklist final](#12-checklist-final)
-- [Resurse oficiale](#resurse-oficiale)
 
 ## 1. Cum funcționează componentele
 
