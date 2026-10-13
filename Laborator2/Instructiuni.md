@@ -144,22 +144,17 @@ Nu confunda ETH-ul local de la Anvil cu Sepolia ETH. Soldurile sunt separate chi
 4. Copiază codul furnizat de cadrul didactic.
 5. Salvează fișierul.
 
-Fișierul `.sol` conține cod Solidity. Citește-l înainte de deploy, în special constructorul, funcțiile care modifică punctele și eventualele verificări de acces.
+Fișierul `.sol` conține cod Solidity. Citește-l înainte de deploy, în special constructorul și funcțiile care modifică punctele.
 
 ### 7.2. Compilează
 
-1. Deschide **Solidity Compiler**.
-2. Alege o versiune de compilator compatibilă cu directiva `pragma` din fișier.
-3. Apasă butonul albastru **Compile FidelityPoints.sol**.
-4. Citește mesajele afișate și rezolvă erorile, dacă există.
-
-Compilarea transformă codul Solidity în bytecode pentru EVM. **Nu implementează contractul pe blockchain** și nu trimite o tranzacție.
+Apasă pe butonul albastru de Compilare.
 
 ## 8. Implementează contractul (Deploy)
 
 ### 8.1. Alege mediul corect
 
-În meniul din dreapta al Remix, deschide fila **Deploy & Run Transactions**.
+În meniul din stanga al Remix, deschide fila **Deploy & Run Transactions**.
 
 1. La **Environment**, selectează **Browser extension – MetaMask**.
 2. La **Account**, verifică să apară adresa contului tău din MetaMask.
@@ -174,15 +169,15 @@ Dacă vrei un contract pe Sepolia, selectează **Sepolia în MetaMask**. Dacă v
 
 ### 8.2. Verifică parametrii de deploy
 
-Codul primit de la cadrul didactic este complet și **nu se modifică**.
-
 În Remix:
 
 - selectează contractul `FidelityPoints`;
-- completează câmpul pentru parametrul constructorului, conform cerinței laboratorului;
+- completează câmpul `_pointValue` de lângă butonul **Deploy** (un număr întreg: valoarea unui punct de fidelitate);
 - verifică valoarea `Value`.
 
-Câmpul `Value` din Remix este cantitatea de ETH trimisă împreună cu tranzacția de deploy. **Nu este valoarea punctelor de fidelitate și nici comisionul de gas.** Dacă nu este necesar să trimiți ETH, lasă-l la `0`.
+Contul cu care faci deploy devine `admin` al contractului (`admin = msg.sender`).
+
+Câmpul `Value` din Remix este cantitatea de ETH trimisă împreună cu tranzacția de deploy. **Nu este valoarea punctelor de fidelitate și nici comisionul de gas.** Constructorul nu este `payable`, deci lasă `Value` la `0`.
 
 ### 8.3. Trimite tranzacția
 
@@ -200,31 +195,31 @@ Adresa contractului este diferită de adresa wallet-ului care a făcut deploy-ul
 
 Deschide secțiunea **Deployed Contracts** și extinde instanța `FidelityPoints`. Remix afișează funcțiile contractului sub formă de butoane.
 
-**Funcțiile exacte depind de fișierul primit la laborator.** Urmează descrierea de mai jos ca să înțelegi interfața, nu ca presupunere despre numele funcțiilor din contractul tău.
-
 ### 9.1. Funcții de citire
 
-Funcțiile declarate `view` sau `pure` citesc date ori calculează un rezultat fără să modifice starea blockchain-ului.
+Nu modifică starea și nu consumă gas din wallet când sunt apelate direct din Remix.
 
-De exemplu, un contract ar putea avea o funcție care returnează soldul de puncte pentru o adresă. Introduci adresa în câmpul funcției și apeși butonul pentru a vedea rezultatul.
-
-Apelurile de citire făcute direct din Remix nu necesită, în mod obișnuit, o tranzacție on-chain și nu consumă gas din wallet.
+- `admin` – adresa care a făcut deploy-ul.
+- `pointValue` – valoarea curentă a unui punct.
+- `points` – introdu adresa unui client și vezi câte puncte are.
+- `getTotalValue` – introdu adresa unui client și vezi valoarea totală a punctelor lui (`puncte × pointValue`).
 
 ### 9.2. Funcții care modifică starea
 
-O funcție care acordă puncte, schimbă o valoare sau actualizează o înregistrare poate necesita o tranzacție.
+Fiecare apel este o tranzacție pe care o confirmi în MetaMask.
+
+- `addPoints` – introdu adresa clientului și numărul de puncte de adăugat.
+- `setPointValue` – introdu noua valoare a unui punct.
 
 Fluxul este:
 
-1. Introduci parametrii ceruți de funcție.
-2. Apeși butonul funcției.
-3. Confirmi tranzacția în MetaMask, dacă este solicitată.
-4. Aștepți procesarea.
-5. Apelezi o funcție de citire pentru a verifica noua stare.
+1. Introdu parametrii funcției.
+2. Apasă butonul funcției.
+3. Confirmă tranzacția în MetaMask.
+4. Așteaptă procesarea.
+5. Apelează o funcție de citire (`points`, `pointValue` sau `getTotalValue`) pentru a verifica noua stare.
 
-De exemplu, dacă o funcție primește o adresă și un număr de puncte, rezultatul depinde de implementare: poate adăuga puncte, poate seta o valoare sau poate respinge operația dacă nu ai permisiunea necesară.
-
-Nu presupune că toate funcțiile pot fi apelate de orice cont. Contractul poate avea un administrator sau alte reguli de autorizare.
+Contractul nu are verificări de acces: `addPoints` și `setPointValue` pot fi apelate de orice cont, nu doar de `admin`.
 
 ### 9.3. Ce înseamnă `Value` și parametrii funcției?
 
@@ -257,70 +252,12 @@ Dacă deploy-ul a fost făcut pe Anvil, adresa nu va avea o pagină corespunzăt
 - **From:** adresa care a trimis tranzacția.
 - **To:** adresa destinatarului; la crearea unui contract, tranzacția poate avea un câmp `To` special sau poate fi afișată ca creare de contract.
 - **Gas Used / Transaction Fee:** resursele consumate și comisionul.
-- **Events / Logs:** evenimentele emise de contract, dacă acesta le emite.
+- **Events / Logs:** contractul nu emite evenimente, deci această secțiune va fi goală.
 
 După ce apelezi o funcție care modifică punctele, caută tranzacția după hash pentru a-i verifica statusul.
 
-**Nu orice modificare a punctelor apare ca transfer de token.** Dacă punctele sunt păstrate într-un `mapping` în contract și nu sunt implementate ca token ERC-20, poți vedea tranzacția și eventualele evenimente fără să existe un transfer de token în lista standard de transferuri. Pentru soldul curent, folosește și funcția de citire din Remix.
+**Punctele nu sunt un token.** Ele sunt păstrate într-un `mapping` în contract, deci după `addPoints` vei vedea tranzacția pe Etherscan, dar nu și un transfer de token. Pentru soldul curent de puncte, folosește funcția `points` din Remix.
 
 Prezența contractului pe Etherscan nu înseamnă automat că sursa Solidity a fost verificată. Verificarea sursei este o operație separată.
-
-## 11. Probleme frecvente
-
-### Remix nu se conectează la MetaMask
-
-- Verifică dacă extensia MetaMask este instalată și deblocată.
-- Reîncarcă Remix și conectează wallet-ul din nou.
-- Verifică permisiunile de conectare ale site-ului.
-
-### Tranzacția eșuează din cauza fondurilor insuficiente
-
-- Confirmă că MetaMask este pe rețeaua dorită.
-- Verifică dacă acel cont are ETH pe rețeaua respectivă.
-- Amintește-ți că ETH-ul local Anvil nu poate plăti comisioanele pe Sepolia.
-
-### Contractul nu apare pe Etherscan
-
-- Verifică dacă ai făcut deploy pe Sepolia, nu pe Anvil.
-- Verifică dacă tranzacția de deploy a fost confirmată.
-- Asigură-te că folosești [Etherscan Sepolia](https://sepolia.etherscan.io/), nu exploratorul Ethereum Mainnet.
-- Caută adresa contractului, nu doar adresa wallet-ului.
-
-### Nu înțeleg ce face un buton din `Deployed Contracts`
-
-- Revino la fișierul Solidity.
-- Caută numele funcției.
-- Verifică parametrii, tipul de returnare și modificările de stare.
-- Caută verificări precum `require`, modificatori de acces și evenimente `emit`.
-
-### Am schimbat contul din MetaMask și nu mai văd soldul așteptat
-
-Verifică adresa contului și rețeaua. Soldurile sunt asociate unei adrese pe o anumită rețea. Schimbarea contului sau a rețelei poate schimba datele afișate.
-
-## 12. Checklist final
-
-- [ ] Am instalat și verificat uneltele necesare.
-- [ ] Am creat un wallet dedicat testării și am protejat fraza de recuperare.
-- [ ] Am selectat rețeaua corectă în MetaMask.
-- [ ] Am primit ETH de test pe rețeaua pe care vreau să lucrez.
-- [ ] Am înțeles diferența dintre Anvil și Sepolia.
-- [ ] Am deschis `FidelityPoints.sol` în Remix.
-- [ ] Am compilat contractul fără erori.
-- [ ] Am verificat contul, rețeaua și parametrii înainte de deploy.
-- [ ] Am implementat contractul și am salvat adresa lui.
-- [ ] Am testat funcțiile de citire și cele care modifică starea.
-- [ ] Am verificat tranzacțiile pe exploratorul rețelei corecte.
-
-## Resurse oficiale
-
-- [MetaMask — descărcare](https://metamask.io/download/)
-- [Remix IDE](https://remix.ethereum.org/)
-- [Documentația Remix](https://remix-ide.readthedocs.io/)
-- [Foundry Book](https://book.getfoundry.sh/)
-- [Anvil — documentația Foundry](https://book.getfoundry.sh/anvil/)
-- [Sepolia Etherscan](https://sepolia.etherscan.io/)
-- [MetaMask Developer](https://developer.metamask.io/)
-
----
 
 **Securitate:** folosește exclusiv conturi și fonduri de test pentru laborator. Nu publica chei private, fraze de recuperare, fișiere `.env` sau alte secrete în repository-ul GitHub.
