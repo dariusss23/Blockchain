@@ -4,7 +4,7 @@ Ghid pas cu pas pentru configurarea mediului și testarea unui smart contract de
 
 > **Scopul laboratorului:** să compilezi un contract Solidity, să îl implementezi pe o rețea de test, să îi apelezi funcțiile și să verifici tranzacțiile pe un explorator blockchain.
 >
-> **Notă:** urmează codul `FidelityPoints.sol` oferit de cadrul didactic. Numele și efectele funcțiilor depind de implementarea concretă a contractului; exemplele de mai jos explică fluxul general și nu înlocuiesc codul laboratorului.
+> **Notă:** folosește codul `FidelityPoints.sol` oferit de cadrul didactic, întocmai, fără modificări.
 
 ## Cuprins
 
@@ -35,15 +35,6 @@ Ghid pas cu pas pentru configurarea mediului și testarea unui smart contract de
 | **Etherscan Sepolia** | Explorator pentru căutarea tranzacțiilor și contractelor de pe Sepolia. |
 | **Foundry** | Suită de unelte pentru dezvoltarea și testarea contractelor; include `forge`, `cast` și `anvil`. |
 
-### Fluxul general
-
-1. Scrii sau deschizi codul Solidity.
-2. Îl compilezi în Remix.
-3. Alegi rețeaua și contul cu MetaMask.
-4. Trimiți tranzacția de deploy și o confirmi.
-5. Interacționezi cu funcțiile contractului.
-6. Verifici tranzacțiile pe exploratorul rețelei potrivite.
-
 ### Important: Anvil și Sepolia sunt rețele diferite
 
 - **Anvil local** rulează pe calculatorul tău. În configurația standard, folosește `http://127.0.0.1:8545` și chain ID `31337`.
@@ -68,37 +59,7 @@ Dacă lucrezi pe Windows și laboratorul cere Foundry în Linux, folosește dist
 
 ## 3. Instalează și verifică Foundry
 
-Dacă Foundry este deja instalat, deschide terminalul Linux/WSL și rulează:
-
-```bash
-foundryup
-forge --version
-cast --version
-anvil --version
-git --version
-```
-
-Ce verifică aceste comenzi?
-
-- `foundryup` actualizează Foundry.
-- `forge` compilează, testează și poate implementa contracte.
-- `cast` permite interacțiunea cu blockchain-ul din terminal.
-- `anvil` pornește un blockchain local.
-- `git` este necesar pentru gestionarea codului și pentru descărcarea unor dependențe.
-
-Dacă o comandă afișează `command not found`, verifică dacă Foundry este instalat și dacă directorul `~/.foundry/bin` se află în `PATH`. Într-un terminal Ubuntu, poți adăuga următoarele linii în `~/.bashrc`:
-
-```bash
-export PATH="$HOME/.foundry/bin:$PATH"
-```
-
-Apoi reîncarcă setările:
-
-```bash
-source ~/.bashrc
-```
-
-Verifică din nou comenzile. Dacă laboratorul folosește exclusiv Remix, Foundry poate să nu fie necesar pentru partea de interacțiune din browser, dar este util pentru fluxul complet de dezvoltare.
+Instalează și verifică Foundry conform pașilor din **Laboratorul 1**.
 
 ## 4. Configurează MetaMask
 
@@ -124,12 +85,12 @@ Adresa publică poate fi distribuită pentru a primi fonduri de test. Cheia priv
 
 Pentru a implementa un contract pe Sepolia, contul expeditor are nevoie de ETH de test pentru a plăti comisioanele.
 
-Folosește un faucet cunoscut, de exemplu unul indicat de cadrul didactic sau disponibil prin [MetaMask Developer](https://developer.metamask.io/). Condițiile și limitele faucet-urilor se pot schimba.
+Pentru minat, folosește faucet-ul: [sepolia-faucet.pk910.de](https://sepolia-faucet.pk910.de/).
 
 1. Deschide faucet-ul.
-2. Conectează wallet-ul dacă serviciul permite acest lucru sau introdu adresa publică.
-3. Solicită fondurile de test.
-4. Așteaptă procesarea solicitării.
+2. Introdu adresa publică a contului din MetaMask.
+3. Pornește minatul și așteaptă să se acumuleze fonduri.
+4. Oprește minatul și solicită recompensa (claim).
 5. Verifică în MetaMask că soldul Sepolia ETH a crescut.
 
 Folosește adresa contului cu care vei plăti deploy-ul. Dacă schimbi ulterior contul selectat în MetaMask, soldul nu se transferă automat.
@@ -172,7 +133,7 @@ Dacă vrei să interacționezi cu blockchain-ul local, adaugă o rețea cu urmă
 | Network name | Anvil Local |
 | RPC URL | `http://127.0.0.1:8545` |
 | Chain ID | `31337` |
-| Currency symbol | `ETH` |
+| Currency symbol | cel sugerat de MetaMask (selectează-l) |
 
 Selectează apoi **Anvil Local** în MetaMask.
 
@@ -199,7 +160,7 @@ Fișierul `.sol` conține cod Solidity. Citește-l înainte de deploy, în speci
 
 1. Deschide **Solidity Compiler**.
 2. Alege o versiune de compilator compatibilă cu directiva `pragma` din fișier.
-3. Apasă **Compile FidelityPoints.sol**.
+3. Apasă butonul albastru **Compile FidelityPoints.sol**.
 4. Citește mesajele afișate și rezolvă erorile, dacă există.
 
 Compilarea transformă codul Solidity în bytecode pentru EVM. **Nu implementează contractul pe blockchain** și nu trimite o tranzacție.
@@ -208,9 +169,10 @@ Compilarea transformă codul Solidity în bytecode pentru EVM. **Nu implementeaz
 
 ### 8.1. Alege mediul corect
 
-Deschide fila **Deploy & Run Transactions**.
+În meniul din dreapta al Remix, deschide fila **Deploy & Run Transactions**.
 
-În funcție de versiunea Remix, opțiunea poate apărea ca **Browser Extension** sau ca opțiune echivalentă pentru conectarea la wallet.
+1. La **Environment**, selectează **Browser extension – MetaMask**.
+2. La **Account**, verifică să apară adresa contului tău din MetaMask.
 
 Conectează MetaMask și verifică în fereastra wallet-ului:
 
@@ -222,10 +184,12 @@ Dacă vrei un contract pe Sepolia, selectează **Sepolia în MetaMask**. Dacă v
 
 ### 8.2. Verifică parametrii de deploy
 
+Codul primit de la cadrul didactic este complet și **nu se modifică**.
+
 În Remix:
 
 - selectează contractul `FidelityPoints`;
-- completează parametrii constructorului, dacă există;
+- completează câmpul pentru parametrul constructorului, conform cerinței laboratorului;
 - verifică valoarea `Value`.
 
 Câmpul `Value` din Remix este cantitatea de ETH trimisă împreună cu tranzacția de deploy. **Nu este valoarea punctelor de fidelitate și nici comisionul de gas.** Dacă nu este necesar să trimiți ETH, lasă-l la `0`.
