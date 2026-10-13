@@ -95,16 +95,6 @@ Pentru minat, folosește faucet-ul: [sepolia-faucet.pk910.de](https://sepolia-fa
 
 Folosește adresa contului cu care vei plăti deploy-ul. Dacă schimbi ulterior contul selectat în MetaMask, soldul nu se transferă automat.
 
-### Verifică soldul din terminal (opțional)
-
-Dacă ai configurat un endpoint RPC pentru Sepolia, poți folosi:
-
-```bash
-cast balance ADRESA_CONTULUI --ether --rpc-url URL_RPC_SEPOLIA
-```
-
-Înlocuiește `ADRESA_CONTULUI` și `URL_RPC_SEPOLIA` cu valorile tale. Nu publica fișierele locale care conțin secrete sau configurații private.
-
 ## 6. Pornește Anvil și înțelege conturile locale
 
 Anvil este un blockchain local destinat dezvoltării. Pornește-l într-un terminal:
